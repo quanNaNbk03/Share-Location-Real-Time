@@ -88,6 +88,7 @@ export function SharePage() {
             <div className="bg-decoration">
                 <div className="bg-blob bg-blob-1" />
                 <div className="bg-blob bg-blob-2" />
+                <div className="bg-blob bg-blob-3" />
             </div>
 
             <div className="page-container">
@@ -169,9 +170,7 @@ export function SharePage() {
                                 {gpsLoading ? '📡 Đang lấy GPS...' : '📍 Cập nhật vị trí ngay'}
                             </button>
                             {gpsError && (
-                                <p style={{ color: '#ff6b74', fontSize: '0.85rem', marginTop: 12 }}>
-                                    ⚠️ {gpsError}
-                                </p>
+                                <div className="error-msg">⚠️ {gpsError}</div>
                             )}
                             <StatusDisplay data={roomData} />
                         </div>
@@ -188,7 +187,7 @@ export function SharePage() {
                                     {gpsLoading ? '📡 Đang lấy GPS...' : '▶ Bật tự động cập nhật'}
                                 </button>
                             ) : (
-                                <button className="btn btn-glass btn-block" onClick={stopAuto}>
+                                <button className="btn btn-stop btn-block" onClick={stopAuto}>
                                     ⏹ Dừng tự động cập nhật
                                 </button>
                             )}
@@ -196,16 +195,14 @@ export function SharePage() {
                                 <div className="status-display" style={{ marginTop: 16 }}>
                                     <div className="flex items-center gap-8">
                                         <span className="status-dot active" />
-                                        <span style={{ fontSize: '0.88rem', fontWeight: 600 }}>
+                                        <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                                             Đang chạy — cập nhật mỗi 30 giây
                                         </span>
                                     </div>
                                 </div>
                             )}
                             {gpsError && (
-                                <p style={{ color: '#ff6b74', fontSize: '0.85rem', marginTop: 12 }}>
-                                    ⚠️ {gpsError}
-                                </p>
+                                <div className="error-msg">⚠️ {gpsError}</div>
                             )}
                             <StatusDisplay data={roomData} />
                         </div>

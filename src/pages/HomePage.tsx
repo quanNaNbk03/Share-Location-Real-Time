@@ -31,6 +31,7 @@ export function HomePage() {
             <div className="bg-decoration">
                 <div className="bg-blob bg-blob-1" />
                 <div className="bg-blob bg-blob-2" />
+                <div className="bg-blob bg-blob-3" />
                 {stars.map((star) => (
                     <div
                         key={star.id}
@@ -41,8 +42,8 @@ export function HomePage() {
                             width: star.size,
                             height: star.size,
                             borderRadius: '50%',
-                            background: 'rgba(255,255,255,0.6)',
-                            animation: `blink ${2 + star.delay}s ease-in-out infinite`,
+                            background: 'rgba(255,255,255,0.55)',
+                            animation: `dotBlink ${2 + star.delay}s ease-in-out infinite`,
                             animationDelay: `${star.delay}s`,
                         }}
                     />
