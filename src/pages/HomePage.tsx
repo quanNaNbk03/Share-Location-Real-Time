@@ -62,9 +62,9 @@ export function HomePage() {
                     <div className="hero-icon">🎓</div>
 
                     <div>
-                        <h1 className="hero-title">Tìm nhau ngày<br />Tốt nghiệp</h1>
+                        <h1 className="hero-title">-Easy-<br />Find me</h1>
                         <p className="hero-subtitle mt-8">
-                            Chia sẻ vị trí của bạn cho gia đình trong khuôn viên trường — đơn giản, nhanh chóng, miễn phí.
+                            Chia sẻ vị trí của bạn cho mọi người đơn giản, nhanh chóng, miễn phí.
                         </p>
                     </div>
 
@@ -76,7 +76,7 @@ export function HomePage() {
                         </div>
                         <div className="glass-card-sm feature-item">
                             <span className="feature-icon">⚡</span>
-                            <span className="feature-label">Cập nhật ngay</span>
+                            <span className="feature-label">Cập nhật liên tục</span>
                         </div>
                         <div className="glass-card-sm feature-item">
                             <span className="feature-icon">🔒</span>
@@ -104,10 +104,9 @@ export function HomePage() {
                                 <>🚀 Tạo Room chia sẻ ngay</>
                             )}
                         </button>
-                        <p className="subtitle text-center">
-                            Nhận link → gửi cho ba mẹ → họ thấy bạn trên bản đồ 🗺️
-                        </p>
                     </div>
+
+
                 </div>
 
                 {/* Footer */}

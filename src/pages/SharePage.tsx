@@ -210,6 +210,35 @@ export function SharePage() {
 
                     {mode === 'owntracks' && <OwnTracksCard />}
                 </div>
+
+                {/* Instruction Board */}
+                <div className="glass-card instruction-board">
+                    <h2 className="instruction-title">Hướng dẫn sử dụng</h2>
+
+                    <div className="instruction-step">
+                        <div className="instruction-step-num">1</div>
+                        <div className="instruction-step-content">
+                            <span className="instruction-step-title">Cập nhật vị trí</span>
+                            <span className="instruction-step-desc">Chọn chế độ và cập nhật vị trí của bạn lên bản đồ</span>
+                        </div>
+                    </div>
+
+                    <div className="instruction-step">
+                        <div className="instruction-step-num">2</div>
+                        <div className="instruction-step-content">
+                            <span className="instruction-step-title">Chia sẻ vị trí</span>
+                            <span className="instruction-step-desc">Sao chép link phía trên và gửi cho gia đình, bạn bè</span>
+                        </div>
+                    </div>
+
+                    <div className="instruction-step">
+                        <div className="instruction-step-num">3</div>
+                        <div className="instruction-step-content">
+                            <span className="instruction-step-title">Tuỳ chỉnh tự động</span>
+                            <span className="instruction-step-desc">Có thể chọn tự động cập nhật liên tục 30 giây / lần</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {toast && <div className="toast">{toast}</div>}
