@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { ref, set, onValue, off } from 'firebase/database';
+import { ref, set, onValue, off, remove, get } from 'firebase/database';
 import { db } from '../lib/firebase';
+
+const THREE_HOURS_MS = 3 * 60 * 60 * 1000; // 3 giờ
 
 export interface RoomLocation {
     lat: number;
@@ -12,6 +14,7 @@ export interface RoomData {
     updatedAt: number | null;
     source: 'manual' | 'web_auto' | 'owntracks' | null;
     status: 'standing_still' | 'moving' | null;
+    username: string | null;
 }
 
 export function useRoom(roomId: string | null) {
@@ -20,6 +23,7 @@ export function useRoom(roomId: string | null) {
         updatedAt: null,
         source: null,
         status: null,
+        username: null,
     });
     const [isConnected, setIsConnected] = useState(false);
     const prevLocationRef = useRef<RoomLocation | null>(null);
@@ -33,6 +37,20 @@ export function useRoom(roomId: string | null) {
             setIsConnected(true);
             if (snapshot.exists()) {
                 const data = snapshot.val() as RoomData;
+
+                // Kiểm tra xem dữ liệu có quá 3h không -> tự động xóa
+                if (data.updatedAt && Date.now() - data.updatedAt > THREE_HOURS_MS) {
+                    remove(roomRef);
+                    setRoomData({
+                        location: null,
+                        updatedAt: null,
+                        source: null,
+                        status: null,
+                        username: null,
+                    });
+                    return;
+                }
+
                 if (prevLocationRef.current && data.location) {
                     const dist = Math.sqrt(
                         Math.pow(data.location.lat - prevLocationRef.current.lat, 2) +
@@ -51,9 +69,24 @@ export function useRoom(roomId: string | null) {
         };
     }, [roomId]);
 
+    // Cleanup: kiểm tra và xóa phòng quá hạn khi mount
+    useEffect(() => {
+        if (!roomId || !db) return;
+        const roomRef = ref(db, `rooms/${roomId}`);
+
+        get(roomRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if (data.updatedAt && Date.now() - data.updatedAt > THREE_HOURS_MS) {
+                    remove(roomRef);
+                }
+            }
+        });
+    }, [roomId]);
+
     // Ghi vị trí lên Firebase
     const updateLocation = useCallback(
-        async (lat: number, lng: number, source: 'manual' | 'web_auto') => {
+        async (lat: number, lng: number, source: 'manual' | 'web_auto', username?: string) => {
             if (!roomId || !db) return;
             const roomRef = ref(db, `rooms/${roomId}`);
             await set(roomRef, {
@@ -61,6 +94,7 @@ export function useRoom(roomId: string | null) {
                 updatedAt: Date.now(),
                 source,
                 status: 'standing_still',
+                username: username || null,
             });
         },
         [roomId]

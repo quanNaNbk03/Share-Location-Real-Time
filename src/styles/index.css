@@ -1019,3 +1019,153 @@ body {
   line-height: 1.45;
   margin-top: 2px;
 }
+/* ===================== USERNAME MODAL ===================== */
+.username-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.username-modal {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-xl);
+  padding: 40px 32px;
+  text-align: center;
+  box-shadow: var(--glass-shadow-lg);
+  animation: modalPop 0.4s var(--spring);
+  z-index: 10;
+}
+
+.username-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(160deg, var(--glass-highlight) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.username-icon-wrap {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(230, 57, 70, 0.4);
+}
+
+.username-icon {
+  font-size: 40px;
+}
+
+.username-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.username-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+.username-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.username-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.username-input-icon {
+  position: absolute;
+  left: 16px;
+  font-size: 1.2rem;
+}
+
+.username-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.15);
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 16px 16px 16px 48px;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+
+[data-theme='light'] .username-input {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.username-input:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 4px rgba(230, 57, 70, 0.15);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+[data-theme='light'] .username-input:focus {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.username-input::placeholder {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.username-error {
+  color: #ff6b74;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.username-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 20px;
+}
+
+@keyframes modalPop {
+  0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.shake {
+  animation: shakeError 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shakeError {
+  10%, 90% { transform: translate3d(-2px, 0, 0); }
+  20%, 80% { transform: translate3d(4px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}

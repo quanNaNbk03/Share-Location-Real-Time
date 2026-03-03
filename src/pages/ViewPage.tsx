@@ -69,7 +69,7 @@ export function ViewPage() {
       <div style={{ flex: 1, position: 'relative', margin: '10px', borderRadius: 22, overflow: 'hidden', minHeight: 0 }}>
         {roomData.location ? (
           <>
-            <MapView lat={roomData.location.lat} lng={roomData.location.lng} />
+            <MapView lat={roomData.location.lat} lng={roomData.location.lng} username={roomData.username} />
 
             {/* Info overlay — luôn dùng class map-info-overlay (dark) để dễ đọc */}
             <div
@@ -91,7 +91,7 @@ export function ViewPage() {
                 </div>
                 {/* Status */}
                 <div style={{ textAlign: 'right' }}>
-                  <p className="info-label">Trạng thái</p>
+                  <p className="info-label">Của: {roomData.username ? <span style={{ fontWeight: 600, color: 'var(--primary)' }}>{roomData.username}</span> : 'Ai đó'} </p>
                   <p className="info-value">
                     {roomData.status === 'moving' ? '🏃 Di chuyển' : '🧍 Đứng yên'}
                   </p>

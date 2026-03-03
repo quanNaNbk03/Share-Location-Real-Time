@@ -2,10 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateRoomId } from '../utils/roomId';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { UsernameModal } from '../components/UsernameModal';
+import { useUsername } from '../hooks/useUsername';
 
 export function HomePage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const { hasUsername, setUsername } = useUsername();
+    const [showNameModal, setShowNameModal] = useState(false);
 
     // Hiệu ứng stars
     const [stars] = useState(() =>
@@ -18,11 +22,25 @@ export function HomePage() {
         }))
     );
 
-    const handleCreate = async () => {
+    const proceedToRoom = async () => {
         setLoading(true);
         await new Promise((r) => setTimeout(r, 600)); // feedback delay
         const id = generateRoomId();
         navigate(`/share/${id}`);
+    };
+
+    const handleCreate = () => {
+        if (!hasUsername) {
+            setShowNameModal(true);
+        } else {
+            proceedToRoom();
+        }
+    };
+
+    const handleNameSubmit = (name: string) => {
+        setUsername(name);
+        setShowNameModal(false);
+        proceedToRoom();
     };
 
     return (
@@ -117,6 +135,11 @@ export function HomePage() {
                     Made with ❤️ cho ngày Tốt nghiệp
                 </p>
             </div>
+
+            {showNameModal && (
+                <UsernameModal onSubmit={handleNameSubmit} />
+            )}
         </div>
+
     );
 }

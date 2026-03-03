@@ -5,6 +5,8 @@ import { useGeolocation } from '../hooks/useGeolocation';
 import { useRoom } from '../hooks/useRoom';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { OwnTracksCard } from '../components/OwnTracksCard';
+import { useUsername } from '../hooks/useUsername';
+import { UsernameModal } from '../components/UsernameModal';
 
 type Mode = 'manual' | 'auto' | 'owntracks';
 
@@ -17,6 +19,9 @@ export function SharePage() {
     const [copied, setCopied] = useState(false);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+    const { username, hasUsername, setUsername } = useUsername();
+    const [showNameModal, setShowNameModal] = useState(!hasUsername);
+
     const { fetchPosition, loading: gpsLoading, error: gpsError } = useGeolocation();
     const { roomData, updateLocation } = useRoom(id ?? null);
 
@@ -25,6 +30,13 @@ export function SharePage() {
         if (id && !isValidRoomId(id)) navigate('/');
     }, [id, navigate]);
 
+    // Hiện lại modal nếu mất username
+    useEffect(() => {
+        if (!hasUsername) {
+            setShowNameModal(true);
+        }
+    }, [hasUsername]);
+
     const showToast = (msg: string) => {
         setToast(msg);
         setTimeout(() => setToast(null), 2800);
@@ -32,26 +44,34 @@ export function SharePage() {
 
     // Manual update
     const handleManualUpdate = async () => {
+        if (!hasUsername) {
+            setShowNameModal(true);
+            return;
+        }
         const coords = await fetchPosition();
         if (coords) {
-            await updateLocation(coords.latitude, coords.longitude, 'manual');
+            await updateLocation(coords.latitude, coords.longitude, 'manual', username || undefined);
             showToast('✅ Đã cập nhật vị trí!');
         }
     };
 
     // Auto update toggle
     const startAuto = useCallback(async () => {
+        if (!username) {
+            setShowNameModal(true);
+            return;
+        }
         const doUpdate = async () => {
             const coords = await fetchPosition();
             if (coords) {
-                await updateLocation(coords.latitude, coords.longitude, 'web_auto');
+                await updateLocation(coords.latitude, coords.longitude, 'web_auto', username);
             }
         };
         await doUpdate();
         intervalRef.current = setInterval(doUpdate, 30000);
         setAutoActive(true);
         showToast('🔄 Đã bật tự động cập nhật (30s)');
-    }, [fetchPosition, updateLocation]);
+    }, [fetchPosition, updateLocation, username]);
 
     const stopAuto = useCallback(() => {
         if (intervalRef.current) {
@@ -81,6 +101,11 @@ export function SharePage() {
         if (newMode === 'owntracks') return; // coming soon
         if (autoActive) stopAuto();
         setMode(newMode);
+    };
+
+    const handleNameSubmit = (name: string) => {
+        setUsername(name);
+        setShowNameModal(false);
     };
 
     return (
@@ -126,6 +151,18 @@ export function SharePage() {
                         </button>
                     </div>
                 </div>
+
+                {/* Info Card current username */}
+                <div className="glass-card-sm z-1 flex justify-between items-center" style={{ padding: '12px 16px', marginBottom: 20 }}>
+                    <div>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Chia sẻ với tên:</span>
+                        <div style={{ fontWeight: 600 }}>{username || '...'}</div>
+                    </div>
+                    <button className="btn btn-glass btn-sm" onClick={() => setShowNameModal(true)}>
+                        ✏️ Sửa
+                    </button>
+                </div>
+
 
                 {/* Mode Tabs */}
                 <div className="mode-tabs">
@@ -242,6 +279,10 @@ export function SharePage() {
             </div>
 
             {toast && <div className="toast">{toast}</div>}
+
+            {showNameModal && (
+                <UsernameModal onSubmit={handleNameSubmit} initialValue={username || ''} />
+            )}
         </div>
     );
 }
@@ -273,3 +314,4 @@ function StatusDisplay({ data }: { data: ReturnType<typeof useRoom>['roomData'] 
         </div>
     );
 }
+

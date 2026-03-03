@@ -49,9 +49,10 @@ function FlyToLocation({ lat, lng }: { lat: number; lng: number }) {
 interface MapViewProps {
     lat: number;
     lng: number;
+    username?: string | null;
 }
 
-export function MapView({ lat, lng }: MapViewProps) {
+export function MapView({ lat, lng, username }: MapViewProps) {
     return (
         <MapContainer
             center={[lat, lng]}
@@ -66,7 +67,7 @@ export function MapView({ lat, lng }: MapViewProps) {
             <Marker position={[lat, lng]} icon={customIcon}>
                 <Popup>
                     <div style={{ textAlign: 'center', fontFamily: 'Be Vietnam Pro, sans-serif' }}>
-                        <strong>📍 Sinh viên đang ở đây</strong>
+                        <strong>📍 {username ? username : 'Tôi đang ở đây'}</strong>
                         <br />
                         <small>
                             {lat.toFixed(5)}, {lng.toFixed(5)}
@@ -78,3 +79,4 @@ export function MapView({ lat, lng }: MapViewProps) {
         </MapContainer>
     );
 }
+
