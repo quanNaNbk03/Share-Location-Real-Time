@@ -15,8 +15,10 @@ export function SharePage() {
     const navigate = useNavigate();
     const [mode, setMode] = useState<Mode>('manual');
     const [autoActive, setAutoActive] = useState(false);
+    const [autoInterval, setAutoInterval] = useState<number>(30000);
     const [toast, setToast] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
+
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const { username, hasUsername, setUsername } = useUsername();
@@ -42,6 +44,14 @@ export function SharePage() {
         setTimeout(() => setToast(null), 2800);
     };
 
+    // Hàm gọi GPS + Gửi DB
+    const executeUpdate = useCallback(async () => {
+        const coords = await fetchPosition();
+        if (coords) {
+            await updateLocation(coords.latitude, coords.longitude, 'web_auto', username || undefined);
+        }
+    }, [fetchPosition, updateLocation, username]);
+
     // Manual update
     const handleManualUpdate = async () => {
         if (!hasUsername) {
@@ -55,33 +65,44 @@ export function SharePage() {
         }
     };
 
-    // Auto update toggle
-    const startAuto = useCallback(async () => {
-        if (!username) {
+    const startAuto = () => {
+        if (!hasUsername) {
             setShowNameModal(true);
             return;
         }
-        const doUpdate = async () => {
-            const coords = await fetchPosition();
-            if (coords) {
-                await updateLocation(coords.latitude, coords.longitude, 'web_auto', username);
-            }
-        };
-        await doUpdate();
-        intervalRef.current = setInterval(doUpdate, 30000);
-        setAutoActive(true);
-        showToast('🔄 Đã bật tự động cập nhật (30s)');
-    }, [fetchPosition, updateLocation, username]);
 
-    const stopAuto = useCallback(() => {
+        executeUpdate(); // Fetch once right away
+
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = setInterval(() => {
+            executeUpdate();
+        }, autoInterval);
+
+        setAutoActive(true);
+        showToast(`🔄 Đã bật định kỳ chạy (${autoInterval >= 60000 ? autoInterval / 60000 + ' phút' : autoInterval / 1000 + 's'})`);
+    };
+
+    const stopAuto = () => {
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
         }
         setAutoActive(false);
         showToast('⏸ Đã tắt tự động cập nhật');
-    }, []);
+    };
 
+    const handleIntervalChange = (newInterval: number) => {
+        setAutoInterval(newInterval);
+        if (autoActive) { // Hot update interval timer while active mode running
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            intervalRef.current = setInterval(() => {
+                executeUpdate();
+            }, newInterval);
+            showToast(`🔄 Đổi chu kì thành ${newInterval >= 60000 ? newInterval / 60000 + ' phút' : newInterval / 1000 + 's'}`);
+        }
+    };
+
+    // Cleanup global unmount
     useEffect(() => {
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
@@ -215,10 +236,40 @@ export function SharePage() {
 
                     {mode === 'auto' && (
                         <div className="glass-card mode-panel">
-                            <p className="section-title">🔄 Tự động cập nhật (30 giây)</p>
-                            <p className="subtitle" style={{ marginBottom: 20 }}>
-                                Vị trí sẽ tự động gửi mỗi 30 giây. Giữ màn hình sáng để hoạt động liên tục.
+                            <p className="section-title">🔄 Tự động cập nhật</p>
+                            <p className="subtitle" style={{ marginBottom: 16 }}>
+                                Vị trí sẽ tự động gửi theo mỗi chu kì. Giữ màn hình sáng để hoạt động liên tục.
                             </p>
+
+                            <div style={{ marginBottom: 20 }}>
+                                <select
+                                    value={autoInterval}
+                                    onChange={(e) => handleIntervalChange(Number(e.target.value))}
+                                    disabled={autoActive}
+                                    style={{
+                                        display: 'block',
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        background: 'rgba(0,0,0,0.2)',
+                                        color: 'var(--text-primary)',
+                                        border: '1px solid var(--glass-border)',
+                                        borderRadius: 'var(--radius-sm)',
+                                        fontSize: '0.9rem',
+                                        outline: 'none',
+                                        opacity: autoActive ? 0.6 : 1
+                                    }}
+                                >
+                                    <option value={10000} style={{ color: 'black' }}>Mỗi 10 giây</option>
+                                    <option value={15000} style={{ color: 'black' }}>Mỗi 15 giây (Nhanh)</option>
+                                    <option value={30000} style={{ color: 'black' }}>Mỗi 30 giây (Chuẩn)</option>
+                                    <option value={60000} style={{ color: 'black' }}>Mỗi 1 phút (Tiết kiệm pin)</option>
+                                    <option value={180000} style={{ color: 'black' }}>Mỗi 3 phút</option>
+                                    <option value={300000} style={{ color: 'black' }}>Mỗi 5 phút</option>
+                                    <option value={600000} style={{ color: 'black' }}>Mỗi 10 phút</option>
+                                    <option value={1200000} style={{ color: 'black' }}>Mỗi 20 phút</option>
+                                </select>
+                            </div>
+
                             {!autoActive ? (
                                 <button className="btn btn-accent btn-block" onClick={startAuto} disabled={gpsLoading}>
                                     {gpsLoading ? '📡 Đang lấy GPS...' : '▶ Bật tự động cập nhật'}
@@ -233,7 +284,7 @@ export function SharePage() {
                                     <div className="flex items-center gap-8">
                                         <span className="status-dot active" />
                                         <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                                            Đang chạy — cập nhật mỗi 30 giây
+                                            Đang chạy — cập nhật mỗi {autoInterval >= 60000 ? `${autoInterval / 60000} phút` : `${autoInterval / 1000} giây`}
                                         </span>
                                     </div>
                                 </div>
@@ -272,7 +323,7 @@ export function SharePage() {
                         <div className="instruction-step-num">3</div>
                         <div className="instruction-step-content">
                             <span className="instruction-step-title">Tuỳ chỉnh tự động</span>
-                            <span className="instruction-step-desc">Có thể chọn tự động cập nhật liên tục 30 giây / lần</span>
+                            <span className="instruction-step-desc">Có thể chọn tự động cập nhật liên tục thời gian tuỳ ý</span>
                         </div>
                     </div>
                 </div>
