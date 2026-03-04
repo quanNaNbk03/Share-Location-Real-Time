@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { generateRoomId } from '../utils/roomId';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { UsernameModal } from '../components/UsernameModal';
+import { ConfirmModal } from '../components/ConfirmModal';
 import { useUsername } from '../hooks/useUsername';
 import { useRoomHistory } from '../hooks/useRoomHistory';
 
@@ -10,8 +11,10 @@ export function HomePage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const { username, hasUsername, setUsername } = useUsername();
-    const { historyRooms, loading: historyLoading } = useRoomHistory(username);
+    const { historyRooms, loading: historyLoading, deleteRoom } = useRoomHistory(username);
     const [showNameModal, setShowNameModal] = useState(false);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
     // Hiệu ứng stars
     const [stars] = useState(() =>
@@ -43,6 +46,19 @@ export function HomePage() {
         setUsername(name);
         setShowNameModal(false);
         proceedToRoom();
+    };
+
+    const handleDeleteRoom = async (roomId: string) => {
+        setConfirmingId(roomId);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!confirmingId) return;
+        const id = confirmingId;
+        setConfirmingId(null);
+        setDeletingId(id);
+        await deleteRoom(id);
+        setDeletingId(null);
     };
 
     return (
@@ -177,6 +193,20 @@ export function HomePage() {
                                                 >
                                                     👁 Xem
                                                 </button>
+                                                <button
+                                                    onClick={() => handleDeleteRoom(r.id)}
+                                                    className="btn btn-sm"
+                                                    disabled={deletingId === r.id}
+                                                    style={{
+                                                        padding: '6px 12px',
+                                                        background: 'rgba(230,57,70,0.15)',
+                                                        border: '1px solid rgba(230,57,70,0.35)',
+                                                        color: deletingId === r.id ? 'var(--text-muted)' : '#e63946',
+                                                        transition: 'all 0.2s',
+                                                    }}
+                                                >
+                                                    {deletingId === r.id ? '⏳' : '🗑️'}
+                                                </button>
                                             </div>
                                         </div>
                                     ))}
@@ -200,7 +230,18 @@ export function HomePage() {
             {showNameModal && (
                 <UsernameModal onSubmit={handleNameSubmit} />
             )}
-        </div>
 
+            {confirmingId && (
+                <ConfirmModal
+                    title="Xoá phòng?"
+                    message={`Phòng #${confirmingId} sẽ bị xoá hoàn toàn khỏi Firebase. Hành động này không thể hoàn tác.`}
+                    confirmLabel="Xoá ngay"
+                    cancelLabel="Huỷ bỏ"
+                    danger
+                    onConfirm={handleConfirmDelete}
+                    onCancel={() => setConfirmingId(null)}
+                />
+            )}
+        </div>
     );
 }

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { ref, onValue, get } from 'firebase/database';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { ref, onValue, get, remove } from 'firebase/database';
 import { db } from '../lib/firebase';
 import type { RoomData } from './useRoom';
 
@@ -111,6 +111,22 @@ export function useRoomHistory(username: string | null) {
     };
   }, [username]);
 
-  return { historyRooms, loading };
+  // Xoá phòng khỏi lịch sử user và khỏi Firebase
+  const deleteRoom = useCallback(
+    async (roomId: string) => {
+      if (!username || !db) return;
+      try {
+        // Xoá khỏi user_rooms
+        await remove(ref(db, `user_rooms/${username}/${roomId}`));
+        // Xoá luôn data phòng (optional — dọn dẹp hoàn toàn)
+        await remove(ref(db, `rooms/${roomId}`));
+      } catch (err) {
+        console.error('[deleteRoom] Lỗi xoá phòng:', err);
+      }
+    },
+    [username]
+  );
+
+  return { historyRooms, loading, deleteRoom };
 }
 

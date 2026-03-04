@@ -1212,3 +1212,93 @@ body {
     transform: translate3d(6px, 0, 0);
   }
 }
+
+/* ===================== CONFIRM MODAL ===================== */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: overlayFadeIn 0.2s ease;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+[data-theme='light'] .confirm-overlay {
+  background: rgba(180, 60, 70, 0.18);
+}
+
+.confirm-modal {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-xl);
+  padding: 36px 28px 28px;
+  text-align: center;
+  box-shadow: var(--glass-shadow-lg);
+  animation: modalPop 0.35s var(--spring);
+  overflow: hidden;
+}
+
+.confirm-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(160deg, var(--glass-highlight) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.confirm-icon-wrap {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 18px;
+  background: linear-gradient(135deg, rgba(230, 57, 70, 0.25), rgba(230, 57, 70, 0.1));
+  border: 1px solid rgba(230, 57, 70, 0.3);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-icon {
+  font-size: 32px;
+}
+
+.confirm-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.confirm-message {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 28px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+}
