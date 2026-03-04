@@ -71,7 +71,7 @@ export function ViewPage() {
           <>
             <MapView lat={roomData.location.lat} lng={roomData.location.lng} username={roomData.username} />
 
-            {/* Info overlay — luôn dùng class map-info-overlay (dark) để dễ đọc */}
+            {/* Info overlay — theo theme */}
             <div
               className="map-info-overlay"
               style={{
@@ -99,7 +99,7 @@ export function ViewPage() {
               </div>
 
               {/* Divider */}
-              <div style={{ height: 1, background: 'rgba(255,255,255,0.12)', margin: '12px 0 10px' }} />
+              <div style={{ height: 1, background: 'var(--glass-border)', margin: '12px 0 10px' }} />
 
               {/* Coords + source */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -110,8 +110,8 @@ export function ViewPage() {
                   <span
                     style={{
                       fontSize: '0.7rem',
-                      color: 'rgba(255,255,255,0.45)',
-                      background: 'rgba(255,255,255,0.08)',
+                      color: 'var(--text-muted)',
+                      background: 'var(--surface)',
                       padding: '3px 10px',
                       borderRadius: 100,
                       fontWeight: 600,
