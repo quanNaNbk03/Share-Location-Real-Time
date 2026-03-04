@@ -45,8 +45,8 @@ export function ViewPage() {
           flexShrink: 0,
         }}
       >
-        <button className="back-btn" onClick={() => navigate('/')}>
-          ← Trang chủ
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          ← Quay lại
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {/* Connection status */}

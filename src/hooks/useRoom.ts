@@ -84,21 +84,38 @@ export function useRoom(roomId: string | null) {
         });
     }, [roomId]);
 
+    // Đăng ký phòng vào user_rooms ngay khi vào trang (luôn refresh updatedAt để phòng không bị lọc mất)
+    const registerRoom = useCallback(
+        async (username: string) => {
+            if (!roomId || !db || !username) return;
+            const userRoomRef = ref(db, `user_rooms/${username}/${roomId}`);
+            // Luôn cập nhật updatedAt để tránh bị lọc ra khỏi lịch sử do timeout 3h
+            await set(userRoomRef, { updatedAt: Date.now() });
+        },
+        [roomId]
+    );
+
     // Ghi vị trí lên Firebase
     const updateLocation = useCallback(
         async (lat: number, lng: number, source: 'manual' | 'web_auto', username?: string) => {
             if (!roomId || !db) return;
             const roomRef = ref(db, `rooms/${roomId}`);
+            const now = Date.now();
             await set(roomRef, {
                 location: { lat, lng },
-                updatedAt: Date.now(),
+                updatedAt: now,
                 source,
                 status: 'standing_still',
                 username: username || null,
             });
+            // Cập nhật lại timestamp trong user_rooms
+            if (username) {
+                const userRoomRef = ref(db, `user_rooms/${username}/${roomId}`);
+                await set(userRoomRef, { updatedAt: now });
+            }
         },
         [roomId]
     );
 
-    return { roomData, isConnected, updateLocation };
+    return { roomData, isConnected, updateLocation, registerRoom };
 }

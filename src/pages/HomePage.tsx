@@ -4,11 +4,13 @@ import { generateRoomId } from '../utils/roomId';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { UsernameModal } from '../components/UsernameModal';
 import { useUsername } from '../hooks/useUsername';
+import { useRoomHistory } from '../hooks/useRoomHistory';
 
 export function HomePage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const { hasUsername, setUsername } = useUsername();
+    const { username, hasUsername, setUsername } = useUsername();
+    const { historyRooms, loading: historyLoading } = useRoomHistory(username);
     const [showNameModal, setShowNameModal] = useState(false);
 
     // Hiệu ứng stars
@@ -123,6 +125,65 @@ export function HomePage() {
                             )}
                         </button>
                     </div>
+
+                    {/* Room History List */}
+                    {hasUsername && (
+                        <div className="history-section w-full mt-24">
+                            <h3 className="section-title text-left mb-16" style={{ fontSize: '1.2rem' }}>
+                                🕒 Lịch sử phòng của {username}
+                            </h3>
+
+                            {historyLoading ? (
+                                <p style={{ color: 'var(--text-muted)' }}>Đang tải lịch sử...</p>
+                            ) : historyRooms.length === 0 ? (
+                                <div className="glass-card-sm text-center" style={{ padding: '20px' }}>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                                        Chưa có phòng nào đang hoạt động.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col gap-12">
+                                    {historyRooms.map((r) => (
+                                        <div
+                                            key={r.id}
+                                            className="glass-card-sm flex justify-between items-center"
+                                            style={{ padding: '14px 16px', background: 'rgba(255,255,255,0.05)' }}
+                                        >
+                                            <div className="flex flex-col">
+                                                <span style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)' }}>
+                                                    #{r.id}
+                                                </span>
+                                                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                                    Cập nhật: {new Date(r.updatedAt).toLocaleTimeString('vi-VN')}
+                                                </span>
+                                                {r.roomData?.location && (
+                                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                                        📍 {r.roomData.location.lat.toFixed(4)}, {r.roomData.location.lng.toFixed(4)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex gap-8">
+                                                <button
+                                                    onClick={() => navigate(`/share/${r.id}`)}
+                                                    className="btn btn-glass btn-sm"
+                                                    style={{ padding: '6px 12px' }}
+                                                >
+                                                    ⚙️ Quản lý
+                                                </button>
+                                                <button
+                                                    onClick={() => navigate(`/room/${r.id}`)}
+                                                    className="btn btn-accent btn-sm"
+                                                    style={{ padding: '6px 12px' }}
+                                                >
+                                                    👁 Xem
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
 
                 </div>

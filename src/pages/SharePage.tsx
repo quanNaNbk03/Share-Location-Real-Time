@@ -25,7 +25,7 @@ export function SharePage() {
     const [showNameModal, setShowNameModal] = useState(!hasUsername);
 
     const { fetchPosition, loading: gpsLoading, error: gpsError } = useGeolocation();
-    const { roomData, updateLocation } = useRoom(id ?? null);
+    const { roomData, updateLocation, registerRoom } = useRoom(id ?? null);
 
     // Validate room id
     useEffect(() => {
@@ -38,6 +38,13 @@ export function SharePage() {
             setShowNameModal(true);
         }
     }, [hasUsername]);
+
+    // Đăng ký room vào history ngay khi có username
+    useEffect(() => {
+        if (hasUsername && username) {
+            registerRoom(username);
+        }
+    }, [hasUsername, username, registerRoom]);
 
     const showToast = (msg: string) => {
         setToast(msg);
@@ -151,14 +158,12 @@ export function SharePage() {
                     <p className="subtitle">📍 Phòng của bạn</p>
                     <div className="flex items-center gap-12">
                         <span className="room-id-badge">#{id}</span>
-                        <a
-                            href={`/room/${id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <button
+                            onClick={() => navigate(`/room/${id}`)}
                             className="btn btn-glass btn-sm"
                         >
                             👁 Xem bản đồ
-                        </a>
+                        </button>
                     </div>
                 </div>
 
