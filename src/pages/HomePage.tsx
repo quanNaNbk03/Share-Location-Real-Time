@@ -202,6 +202,24 @@ export function HomePage() {
                 >
                     Made with ❤️ cho ngày Tốt nghiệp
                 </p>
+                <p className="text-center" style={{ color: 'var(--text-muted)', fontSize: '0.75rem', paddingBottom: 16, zIndex: 1 }}>
+                    🔓 Open Source —{' '}
+                    <a
+                        href="https://github.com/quanNaNbk03/Share-Location-Real-Time"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                            color: 'var(--primary-light)',
+                            textDecoration: 'none',
+                            fontWeight: 600,
+                            transition: 'opacity 0.2s',
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.75')}
+                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                    >
+                        GitHub ↗
+                    </a>
+                </p>
             </div>
 
             {showNameModal && (
