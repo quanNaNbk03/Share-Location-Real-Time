@@ -4,6 +4,7 @@ import { MapView } from '../components/MapView';
 import { useRoom } from '../hooks/useRoom';
 import { isValidRoomId } from '../utils/roomId';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { GalaxyBackground } from '../components/GalaxyBackground';
 
 function formatRelativeTime(ts: number | null): string {
   if (!ts) return '—';
@@ -31,6 +32,7 @@ export function ViewPage() {
 
   return (
     <div className="app-layout" style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
+      <GalaxyBackground />
 
       {/* Header */}
       <div

@@ -7,6 +7,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 import { OwnTracksCard } from '../components/OwnTracksCard';
 import { useUsername } from '../hooks/useUsername';
 import { UsernameModal } from '../components/UsernameModal';
+import { GalaxyBackground } from '../components/GalaxyBackground';
 
 type Mode = 'manual' | 'auto' | 'owntracks';
 
@@ -138,6 +139,7 @@ export function SharePage() {
 
     return (
         <div className="app-layout">
+            <GalaxyBackground />
             <div className="bg-decoration">
                 <div className="bg-blob bg-blob-1" />
                 <div className="bg-blob bg-blob-2" />

@@ -6,6 +6,7 @@ import { UsernameModal } from '../components/UsernameModal';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { useUsername } from '../hooks/useUsername';
 import { useRoomHistory } from '../hooks/useRoomHistory';
+import { GalaxyBackground } from '../components/GalaxyBackground';
 
 export function HomePage() {
     const navigate = useNavigate();
@@ -16,16 +17,6 @@ export function HomePage() {
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
-    // Hiệu ứng stars
-    const [stars] = useState(() =>
-        Array.from({ length: 30 }, (_, i) => ({
-            id: i,
-            x: Math.random() * 100,
-            y: Math.random() * 100,
-            size: Math.random() * 3 + 1,
-            delay: Math.random() * 3,
-        }))
-    );
 
     const proceedToRoom = async () => {
         setLoading(true);
@@ -63,27 +54,13 @@ export function HomePage() {
 
     return (
         <div className="app-layout">
-            {/* Background */}
+            {/* Animated Galaxy Background */}
+            <GalaxyBackground />
+            {/* Colour blobs */}
             <div className="bg-decoration">
                 <div className="bg-blob bg-blob-1" />
                 <div className="bg-blob bg-blob-2" />
                 <div className="bg-blob bg-blob-3" />
-                {stars.map((star) => (
-                    <div
-                        key={star.id}
-                        style={{
-                            position: 'absolute',
-                            left: `${star.x}%`,
-                            top: `${star.y}%`,
-                            width: star.size,
-                            height: star.size,
-                            borderRadius: '50%',
-                            background: 'rgba(255,255,255,0.55)',
-                            animation: `dotBlink ${2 + star.delay}s ease-in-out infinite`,
-                            animationDelay: `${star.delay}s`,
-                        }}
-                    />
-                ))}
             </div>
 
             <div className="page-container">
